@@ -1,2 +1,2 @@
-I am your grand father
-I am Yi Zeng under any circusmant
+I am yGit is a distributed version control system.
+Git is free software distributed under the GPL.
