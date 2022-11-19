@@ -1,8 +1,12 @@
 package com.yizeng.chapter05;
 
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class sourcetest
 {
@@ -34,11 +38,20 @@ public class sourcetest
         // 5.从socket文本流读取数据
         DataStreamSource<String> socketstream = env.socketTextStream("node1", 7777);
 
+        // 6.从kafka读取数据
+        Properties properties = new Properties();
+        properties.setProperty("bootstrap.servers","node1:9092");
+        properties.setProperty("group.id","consumer-group");
+        properties.setProperty("key.deserializer","org.apache.kafka.common.serialization.StringDeserializer");
+        properties.setProperty("value.deserializer","org.apache.kafka.common.serialization.StringDeserializer");
+        properties.setProperty("auto.offset.reset","latest");
+        DataStreamSource<String> kafkastream = env.addSource(new FlinkKafkaConsumer<String>("clicks", new SimpleStringSchema(), properties));
         textstream.print("text");
         numstream.print("nums");
         eventstream.print("event");
         elementstream.print("element");
         socketstream.print("socket");
+        kafkastream.print("kafka");
         env.execute();
     }
 
